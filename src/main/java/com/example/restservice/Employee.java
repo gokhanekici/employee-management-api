@@ -3,13 +3,26 @@ package com.example.restservice;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 @JsonPropertyOrder({"employee_id", "first_name", "last_name", "email", "title"})
 public class Employee {
 
+    @NotBlank
     private String employeeId;
+
+    @NotBlank
     private String firstName;
+
+    @NotBlank
     private String lastName;
+
+    @NotBlank
+    @Email
     private String email;
+
+    @NotBlank
     private String title;
 
     public Employee() {

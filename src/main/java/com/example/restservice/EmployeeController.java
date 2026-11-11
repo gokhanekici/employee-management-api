@@ -12,6 +12,8 @@ import java.net.URI;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import jakarta.validation.Valid;
+
 @RestController
 public class EmployeeController {
 
@@ -27,7 +29,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/employees")
-    public ResponseEntity<Employee> addEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> addEmployee(@Valid @RequestBody Employee employee) {
         if (!employeeManager.addEmployee(employee)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }

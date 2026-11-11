@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.ResultActions;
 
 class EmployeeApiTest {
 
@@ -31,6 +32,12 @@ class EmployeeApiTest {
         mockMvc = MockMvcBuilders
                 .standaloneSetup(new EmployeeController(new EmployeeManager()))
                 .build();
+    }
+
+    private ResultActions postJson(String json) throws Exception {
+        return mockMvc.perform(post("/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json));
     }
 
     @Test
@@ -89,5 +96,41 @@ class EmployeeApiTest {
     void getByIdReturns404ForUnknownId() throws Exception {
         mockMvc.perform(get("/employees/UNKNOWN"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void postWithMissingFirstNameReturns400() throws Exception {
+        postJson("""
+            {
+              "employee_id": "E3001",
+              "last_name": "Doe",
+              "email": "jane.doe@example.com",
+              "title": "Engineer"
+            }
+            """)
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/employees"))
+                .andExpect(jsonPath("$.Employees.length()").value(3));
+    }
+
+    @Test
+    void postWithInvalidEmailReturns400() throws Exception {
+        postJson("""
+            {
+              "employee_id": "E3001",
+              "first_name": "Jane",
+              "last_name": "Doe",
+              "email": "not-an-email",
+              "title": "Engineer"
+            }
+            """)
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void postWithMalformedJsonReturns400() throws Exception {
+        postJson("{ this is not json")
+                .andExpect(status().isBadRequest());
     }
 }
