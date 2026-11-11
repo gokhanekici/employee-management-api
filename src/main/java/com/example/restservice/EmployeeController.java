@@ -8,6 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.net.URI;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.util.UriComponentsBuilder;
+
 @RestController
 public class EmployeeController {
 
@@ -27,6 +31,15 @@ public class EmployeeController {
         if (!employeeManager.addEmployee(employee)) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(employee);
+        URI location = UriComponentsBuilder.fromPath("/employees/{id}")
+                .buildAndExpand(employee.getEmployeeId()).encode().toUri();
+        return ResponseEntity.created(location).body(employee);
+    }
+
+    @GetMapping("/employees/{employeeId}")
+    public ResponseEntity<Employee> getEmployee(@PathVariable("employeeId") String employeeId) {
+        return employeeManager.findEmployee(employeeId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

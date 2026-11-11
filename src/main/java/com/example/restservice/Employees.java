@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class Employees {
 
@@ -26,6 +27,12 @@ public class Employees {
     public boolean containsId(String employeeId) {
         return employeeList.stream()
                 .anyMatch(e -> Objects.equals(e.getEmployeeId(), employeeId));
+    }
+
+    public Optional<Employee> findById(String employeeId) {
+        return employeeList.stream()
+                .filter(e -> Objects.equals(e.getEmployeeId(), employeeId))
+                .findFirst();
     }
 }
 

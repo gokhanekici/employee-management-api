@@ -4,6 +4,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,7 @@ class EmployeeApiTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(NEW_EMPLOYEE_JSON))
                 .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/employees/E2001"))
                 .andExpect(jsonPath("$.employee_id").value("E2001"))
                 .andExpect(jsonPath("$.first_name").value("Linus"));
 
@@ -73,5 +75,19 @@ class EmployeeApiTest {
 
         mockMvc.perform(get("/employees"))
                 .andExpect(jsonPath("$.Employees.length()").value(4));
+    }
+
+    @Test
+    void getByIdReturnsSingleEmployee() throws Exception {
+        mockMvc.perform(get("/employees/E1001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.employee_id").value("E1001"))
+                .andExpect(jsonPath("$.first_name").value("Ada"));
+    }
+
+    @Test
+    void getByIdReturns404ForUnknownId() throws Exception {
+        mockMvc.perform(get("/employees/UNKNOWN"))
+                .andExpect(status().isNotFound());
     }
 }

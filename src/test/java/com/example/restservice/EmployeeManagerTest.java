@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.Optional;
 
 class EmployeeManagerTest {
 
@@ -45,5 +46,18 @@ class EmployeeManagerTest {
 
         assertThrows(UnsupportedOperationException.class,
                 () -> manager.getEmployees().getEmployeeList().add(intruder));
+    }
+
+    @Test
+    void findEmployeeReturnsExistingEmployee() {
+        Optional<Employee> found = manager.findEmployee("E1001");
+
+        assertTrue(found.isPresent());
+        assertEquals("Ada", found.get().getFirstName());
+    }
+
+    @Test
+    void findEmployeeReturnsEmptyForUnknownId() {
+        assertTrue(manager.findEmployee("UNKNOWN").isEmpty());
     }
 }

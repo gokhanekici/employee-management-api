@@ -2,6 +2,7 @@ package com.example.restservice;
 
 import java.util.List;
 import org.springframework.stereotype.Component;
+import java.util.Optional;
 
 @Component
 public class EmployeeManager {
@@ -30,5 +31,9 @@ public class EmployeeManager {
         }
         employees.addEmployee(employee);
         return true;
+    }
+
+    public Optional<Employee> findEmployee(String employeeId) {
+        return employees.findById(employeeId);
     }
 }

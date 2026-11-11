@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeControllerTest {
@@ -54,5 +55,22 @@ class EmployeeControllerTest {
 
         assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
         assertNull(response.getBody());
+    }
+
+    @Test
+    void getEmployeeReturns200WhenFound() {
+        when(employeeManager.findEmployee("E2001")).thenReturn(Optional.of(employee));
+
+        ResponseEntity<Employee> response = controller.getEmployee("E2001");
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(employee, response.getBody());
+    }
+
+    @Test
+    void getEmployeeReturns404WhenMissing() {
+        when(employeeManager.findEmployee("UNKNOWN")).thenReturn(Optional.empty());
+
+        assertEquals(HttpStatus.NOT_FOUND, controller.getEmployee("UNKNOWN").getStatusCode());
     }
 }
