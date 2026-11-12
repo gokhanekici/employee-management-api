@@ -5,15 +5,16 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
+@SpringBootTest
+@Transactional
 class EmployeeManagerTest {
 
+    @Autowired
     private EmployeeManager manager;
-
-    @BeforeEach
-    void setUp() {
-        manager = new EmployeeManager();
-    }
 
     @Test
     void startsWithThreeEmployees() {
@@ -27,7 +28,7 @@ class EmployeeManagerTest {
 
         assertTrue(manager.addEmployee(newEmployee));
         assertEquals(4, manager.getEmployees().getEmployeeList().size());
-        assertTrue(manager.getEmployees().containsId("E2001"));
+        assertTrue(manager.findEmployee("E2001").isPresent());
     }
 
     @Test

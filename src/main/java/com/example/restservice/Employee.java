@@ -8,9 +8,16 @@ import jakarta.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "employees")
 @JsonPropertyOrder({"employee_id", "first_name", "last_name", "email", "title"})
 public class Employee {
 
+    @Id
     @NotBlank
     private String employeeId;
 
