@@ -99,4 +99,20 @@ class EmployeeControllerTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         verify(employeeManager, never()).updateEmployee(any());
     }
+
+    @Test
+    void deleteEmployeeReturns204WhenDeleted() {
+        when(employeeManager.deleteEmployee("E2001")).thenReturn(true);
+
+        assertEquals(HttpStatus.NO_CONTENT,
+                controller.deleteEmployee("E2001").getStatusCode());
+    }
+
+    @Test
+    void deleteEmployeeReturns404WhenMissing() {
+        when(employeeManager.deleteEmployee("UNKNOWN")).thenReturn(false);
+
+        assertEquals(HttpStatus.NOT_FOUND,
+                controller.deleteEmployee("UNKNOWN").getStatusCode());
+    }
 }

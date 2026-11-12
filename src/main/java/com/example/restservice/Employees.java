@@ -13,7 +13,9 @@ public class Employees {
 
     @JsonProperty("Employees")
     public List<Employee> getEmployeeList() {
-        return List.copyOf(employeeList);
+        return employeeList.stream()
+                .filter(Employee::isActive)
+                .toList();
     }
 
     public void setEmployeeList(List<Employee> employeeList) {
@@ -31,18 +33,27 @@ public class Employees {
 
     public Optional<Employee> findById(String employeeId) {
         return employeeList.stream()
+                .filter(Employee::isActive)
                 .filter(e -> Objects.equals(e.getEmployeeId(), employeeId))
                 .findFirst();
     }
 
     public boolean replace(Employee updated) {
         for (int i = 0; i < employeeList.size(); i++) {
-            if (Objects.equals(employeeList.get(i).getEmployeeId(), updated.getEmployeeId())) {
+            Employee existing = employeeList.get(i);
+            if (existing.isActive()
+                    && Objects.equals(existing.getEmployeeId(), updated.getEmployeeId())) {
                 employeeList.set(i, updated);
                 return true;
             }
         }
         return false;
+    }
+
+    public boolean deactivate(String employeeId) {
+        Optional<Employee> employee = findById(employeeId);
+        employee.ifPresent(e -> e.setActive(false));
+        return employee.isPresent();
     }
 }
 

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @JsonPropertyOrder({"employee_id", "first_name", "last_name", "email", "title"})
 public class Employee {
 
@@ -24,6 +26,8 @@ public class Employee {
 
     @NotBlank
     private String title;
+
+    private boolean active = true;
 
     public Employee() {
     }
@@ -54,4 +58,8 @@ public class Employee {
 
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
+
+    @JsonIgnore
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 }

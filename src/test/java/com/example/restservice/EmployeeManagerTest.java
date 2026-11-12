@@ -75,6 +75,44 @@ class EmployeeManagerTest {
     }
 
     @Test
+    void deleteEmployeeHidesEmployeeFromListAndLookup() {
+        assertTrue(manager.deleteEmployee("E1001"));
+
+        assertEquals(2, manager.getEmployees().getEmployeeList().size());
+        assertTrue(manager.findEmployee("E1001").isEmpty());
+    }
+
+    @Test
+    void deleteEmployeeReturnsFalseForUnknownId() {
+        assertFalse(manager.deleteEmployee("UNKNOWN"));
+    }
+
+    @Test
+    void deleteEmployeeReturnsFalseWhenAlreadyDeleted() {
+        manager.deleteEmployee("E1001");
+
+        assertFalse(manager.deleteEmployee("E1001"));
+    }
+
+    @Test
+    void deletedEmployeeIdCannotBeReused() {
+        manager.deleteEmployee("E1001");
+        Employee reused = new Employee("E1001", "New", "Person",
+                "new.person@example.com", "Engineer");
+
+        assertFalse(manager.addEmployee(reused));
+    }
+
+    @Test
+    void updateEmployeeReturnsFalseForDeletedEmployee() {
+        manager.deleteEmployee("E1001");
+        Employee updated = new Employee("E1001", "Ada", "Lovelace",
+                "ada.lovelace@example.com", "Principal Engineer");
+
+        assertFalse(manager.updateEmployee(updated));
+    }
+
+    @Test
     void findEmployeeReturnsEmptyForUnknownId() {
         assertTrue(manager.findEmployee("UNKNOWN").isEmpty());
     }

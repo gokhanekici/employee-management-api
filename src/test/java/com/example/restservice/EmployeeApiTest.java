@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.ResultActions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 class EmployeeApiTest {
 
@@ -174,5 +175,39 @@ class EmployeeApiTest {
 
         mockMvc.perform(get("/employees/E1002"))
                 .andExpect(jsonPath("$.first_name").value("Alan"));
+    }
+
+    @Test
+    void deleteHidesEmployeeFromSubsequentRequests() throws Exception {
+        mockMvc.perform(delete("/employees/E1001"))
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(get("/employees"))
+                .andExpect(jsonPath("$.Employees.length()").value(2));
+        mockMvc.perform(get("/employees/E1001"))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(delete("/employees/E1001"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteReturns404ForUnknownId() throws Exception {
+        mockMvc.perform(delete("/employees/UNKNOWN"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void postWithDeletedEmployeeIdReturns409() throws Exception {
+        postJson(NEW_EMPLOYEE_JSON).andExpect(status().isCreated());
+        mockMvc.perform(delete("/employees/E2001"))
+                .andExpect(status().isNoContent());
+
+        postJson(NEW_EMPLOYEE_JSON).andExpect(status().isConflict());
+    }
+
+    @Test
+    void activeFlagIsNotExposedInJson() throws Exception {
+        mockMvc.perform(get("/employees/E1001"))
+                .andExpect(jsonPath("$.active").doesNotExist());
     }
 }

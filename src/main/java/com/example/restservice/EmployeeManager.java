@@ -40,4 +40,9 @@ public class EmployeeManager {
     public Optional<Employee> findEmployee(String employeeId) {
         return employees.findById(employeeId);
     }
+
+    // Soft delete: the record is kept but marked inactive, and its ID stays reserved.
+    public boolean deleteEmployee(String employeeId) {
+        return employees.deactivate(employeeId);
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
 public class EmployeeController {
@@ -58,5 +59,13 @@ public class EmployeeController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(employee);
+    }
+
+    @DeleteMapping("/employees/{employeeId}")
+    public ResponseEntity<Void> deleteEmployee(@PathVariable("employeeId") String employeeId) {
+        if (!employeeManager.deleteEmployee(employeeId)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.noContent().build();
     }
 }
