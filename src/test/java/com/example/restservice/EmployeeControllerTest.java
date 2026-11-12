@@ -73,4 +73,30 @@ class EmployeeControllerTest {
 
         assertEquals(HttpStatus.NOT_FOUND, controller.getEmployee("UNKNOWN").getStatusCode());
     }
+
+    @Test
+    void updateEmployeeReturns200WhenUpdated() {
+        when(employeeManager.updateEmployee(employee)).thenReturn(true);
+
+        ResponseEntity<Employee> response = controller.updateEmployee("E2001", employee);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertSame(employee, response.getBody());
+    }
+
+    @Test
+    void updateEmployeeReturns404WhenMissing() {
+        when(employeeManager.updateEmployee(employee)).thenReturn(false);
+
+        assertEquals(HttpStatus.NOT_FOUND,
+                controller.updateEmployee("E2001", employee).getStatusCode());
+    }
+
+    @Test
+    void updateEmployeeReturns400WhenIdsDoNotMatch() {
+        ResponseEntity<Employee> response = controller.updateEmployee("E9999", employee);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        verify(employeeManager, never()).updateEmployee(any());
+    }
 }

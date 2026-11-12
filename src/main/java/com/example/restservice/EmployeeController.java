@@ -12,6 +12,8 @@ import java.net.URI;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import org.springframework.web.bind.annotation.PutMapping;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -43,5 +45,18 @@ public class EmployeeController {
         return employeeManager.findEmployee(employeeId)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/employees/{employeeId}")
+    public ResponseEntity<Employee> updateEmployee(
+            @PathVariable("employeeId") String employeeId,
+            @Valid @RequestBody Employee employee) {
+        if (!employeeId.equals(employee.getEmployeeId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!employeeManager.updateEmployee(employee)) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(employee);
     }
 }

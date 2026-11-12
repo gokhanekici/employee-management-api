@@ -33,6 +33,10 @@ public class EmployeeManager {
         return true;
     }
 
+    public boolean updateEmployee(Employee employee) {
+        return employees.replace(employee);
+    }
+
     public Optional<Employee> findEmployee(String employeeId) {
         return employees.findById(employeeId);
     }

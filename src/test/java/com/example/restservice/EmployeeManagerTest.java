@@ -57,6 +57,24 @@ class EmployeeManagerTest {
     }
 
     @Test
+    void updateEmployeeReplacesExistingEmployee() {
+        Employee updated = new Employee("E1001", "Ada", "Lovelace",
+                "ada.lovelace@example.com", "Principal Engineer");
+
+        assertTrue(manager.updateEmployee(updated));
+        assertEquals("Principal Engineer", manager.findEmployee("E1001").get().getTitle());
+        assertEquals(3, manager.getEmployees().getEmployeeList().size());
+    }
+
+    @Test
+    void updateEmployeeReturnsFalseForUnknownId() {
+        Employee unknown = new Employee("UNKNOWN", "No", "One",
+                "no.one@example.com", "None");
+
+        assertFalse(manager.updateEmployee(unknown));
+    }
+
+    @Test
     void findEmployeeReturnsEmptyForUnknownId() {
         assertTrue(manager.findEmployee("UNKNOWN").isEmpty());
     }

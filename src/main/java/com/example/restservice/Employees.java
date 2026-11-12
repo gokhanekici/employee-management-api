@@ -34,5 +34,15 @@ public class Employees {
                 .filter(e -> Objects.equals(e.getEmployeeId(), employeeId))
                 .findFirst();
     }
+
+    public boolean replace(Employee updated) {
+        for (int i = 0; i < employeeList.size(); i++) {
+            if (Objects.equals(employeeList.get(i).getEmployeeId(), updated.getEmployeeId())) {
+                employeeList.set(i, updated);
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.ResultActions;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 class EmployeeApiTest {
 
@@ -25,6 +26,16 @@ class EmployeeApiTest {
             }
             """;
 
+    private static final String UPDATED_ADA_JSON = """
+        {
+          "employee_id": "E1001",
+          "first_name": "Ada",
+          "last_name": "Lovelace",
+          "email": "ada.lovelace@example.com",
+          "title": "Principal Engineer"
+        }
+        """;
+
     private MockMvc mockMvc;
 
     @BeforeEach
@@ -36,6 +47,12 @@ class EmployeeApiTest {
 
     private ResultActions postJson(String json) throws Exception {
         return mockMvc.perform(post("/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json));
+    }
+
+    private ResultActions putJson(String employeeId, String json) throws Exception {
+        return mockMvc.perform(put("/employees/" + employeeId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
     }
@@ -132,5 +149,30 @@ class EmployeeApiTest {
     void postWithMalformedJsonReturns400() throws Exception {
         postJson("{ this is not json")
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void putUpdatesExistingEmployee() throws Exception {
+        putJson("E1001", UPDATED_ADA_JSON)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Principal Engineer"));
+
+        mockMvc.perform(get("/employees/E1001"))
+                .andExpect(jsonPath("$.title").value("Principal Engineer"));
+    }
+
+    @Test
+    void putReturns404ForUnknownId() throws Exception {
+        putJson("E2001", NEW_EMPLOYEE_JSON)
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void putReturns400WhenUrlAndBodyIdsDiffer() throws Exception {
+        putJson("E1002", UPDATED_ADA_JSON)
+                .andExpect(status().isBadRequest());
+
+        mockMvc.perform(get("/employees/E1002"))
+                .andExpect(jsonPath("$.first_name").value("Alan"));
     }
 }
